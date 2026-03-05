@@ -42,3 +42,8 @@ docsearch = PineconeVectorStore.from_documents(
     embedding=embedding,
     index_name=index_name
 )
+
+
+
+#alreday created the pincone index, so no need this code again 
+#you can delete the pincone index from pinecone dashboard and run this code to create the index again if you want to test the code again.
