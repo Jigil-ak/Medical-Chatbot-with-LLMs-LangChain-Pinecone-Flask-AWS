@@ -1,28 +1,30 @@
-from langchain.document_loaders import PyPDFLoader,DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
 from langchain.schema import Document
-from langchain.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
+from langchain.embeddings import HuggingFaceEmbeddings
 
 
-
-#extract text from pdf files
+# --------------------------------
+# Load PDF files
+# --------------------------------
 def load_pdf_files(data):
-    loader = DirectoryLoader(data, 
-                             glob="*.pdf", 
-                             loader_cls=PyPDFLoader)
+    loader = DirectoryLoader(
+        data,
+        glob="*.pdf",
+        loader_cls=PyPDFLoader
+    )
+
     documents = loader.load()
     return documents
 
 
-
+# --------------------------------
+# Reduce metadata
+# --------------------------------
 def filter_to_minimal_docs(docs: List[Document]) -> List[Document]:
-    """
-    Given a list of Document objects, return a new list of Document objects
-    that only contain source in metadata and the original page content.
-    """
 
-    minimal_docs: List[Document] = []
+    minimal_docs = []
 
     for doc in docs:
         src = doc.metadata.get("source")
@@ -37,27 +39,30 @@ def filter_to_minimal_docs(docs: List[Document]) -> List[Document]:
     return minimal_docs
 
 
-
-#split documents into smaller chunks
+# --------------------------------
+# Split documents
+# --------------------------------
 def text_split(minimal_docs):
+
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500, 
-        chunk_overlap=20)
+        chunk_size=500,
+        chunk_overlap=20
+    )
+
     text_chunks = text_splitter.split_documents(minimal_docs)
+
     return text_chunks
 
 
-
+# --------------------------------
+# Download embeddings
+# --------------------------------
 def download_embeddings():
-    """
-    Download and return the HuggingFace embedding model.
-    """
-    
+
     model_name = "sentence-transformers/all-MiniLM-L6-v2"
-    
-    embeddings = HuggingFaceBgeEmbeddings(
+
+    embeddings = HuggingFaceEmbeddings(
         model_name=model_name
     )
-    
-    return embeddings
 
+    return embeddings
